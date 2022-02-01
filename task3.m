@@ -69,6 +69,9 @@ Alog = -log(A);
 
 mAvPath = zeros(1,nFlows);
 mAvPath = mostAvailablePath(Alog,T,1);
+
+%% Alínea a)
+
 fprintf("Alínea a)\n");
 
 for i=1:nFlows
@@ -86,25 +89,51 @@ end
 
 fprintf("Alínea b)\n");
 [bestPath, secondPath] = disjoint_paths(Alog,T);
+serviceAvailability = 0;
 for i=1:nFlows
     availabilityBest = 1;
     availabilitySecond = 1;
     fprintf("Flow %d:\n",i);
-    fprintf("\tBest Path: ");
-    bestPath{i}{1}
-    fprintf("\tAlternative path: ");
+    fprintf("\tBest Path: %d",bestPath{i}{1}(1));
+    for j= 2:length(bestPath{i}{1})
+            fprintf("-%d",bestPath{i}{1}(j));
+    end
+    
+    fprintf("\tAlternative path: %d",secondPath{i}{1}(1));
     if ~isempty(secondPath{i})
-        secondPath{i}{1}
+        for j= 2:length(secondPath{i}{1})
+                fprintf("-%d",secondPath{i}{1}(j));
+        end
     else
-        secondPath{i}
+        fprintf("No alternative found!!!");
     end
 
     for j=2:length(bestPath{i}{1})
         availabilityBest = availabilityBest * A(bestPath{i}{1}(j-1),bestPath{i}{1}(j));
     end
-    fprintf("\tAvailability for best path: %0.5f\n\n",availabilityBest);
+    fprintf("\n\tAvailability for best path: %0.5f%%\n",availabilityBest*100);
     for j=2:length(secondPath{i}{1})
         availabilitySecond = availabilitySecond * A(secondPath{i}{1}(j-1),secondPath{i}{1}(j));
     end
-    fprintf("\tAvailability for second path: %0.5f\n\n",availabilitySecond);
+    fprintf("\tAvailability for second path: %0.5f%%\n",availabilitySecond*100);
+    pairAvailability = 1-((1-availabilityBest) * (1-availabilitySecond));
+    fprintf("\tPair Availability: %0.5f%%\n\n",pairAvailability*100);
+    serviceAvailability = serviceAvailability + pairAvailability;
 end
+fprintf("Service Availability: %0.5f%%\n\n",(serviceAvailability/nFlows)*100);
+
+%% Alínea c)
+
+fprintf("Alínea c)\n");
+Loads= calculateLinkLoads1plus1(nNodes,Links,T,bestPath,secondPath)
+totalLoad= sum(sum(Loads(:,3:4)));
+fprintf("Protection 1+1 Total Load: %0.3f\n\n",totalLoad);
+
+%% Alínea d)
+
+fprintf("Alínea d)\n");
+Loads= calculateLinkLoads1to1(nNodes,Links,T,bestPath,secondPath)
+totalLoad= sum(sum(Loads(:,3:4)));
+fprintf("Protection 1:1 Total Load: %0.3f\n",totalLoad);
+
+
