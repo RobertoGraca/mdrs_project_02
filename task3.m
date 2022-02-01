@@ -65,17 +65,17 @@ MTBF= (450*365*24)./L;
 A= MTBF./(MTBF + 24);
 A(isnan(A))= 0;
 
-Alog = -log(A) * 100;
+Alog = -log(A);
 
 mAvPath = zeros(1,nFlows);
 mAvPath = mostAvailablePath(Alog,T,1);
-availability = 1;
 fprintf("Alínea a)\n");
 
 for i=1:nFlows
-    for j=2:length(mAvPath{1}{1})
-        row = mAvPath{1}{1}(j-1);
-        col = mAvPath{1}{1}(j);
+    availability = 1;
+    for j=2:length(mAvPath{i}{1})
+        row = mAvPath{i}{1}(j-1);
+        col = mAvPath{i}{1}(j);
         availability = availability * A(row,col);
     end
     fprintf("Most Available Path in Flow %d: ",i);
@@ -87,12 +87,24 @@ end
 fprintf("Alínea b)\n");
 [bestPath, secondPath] = disjoint_paths(Alog,T);
 for i=1:nFlows
-    fprintf("Flow %d Best Path: ",i);
+    availabilityBest = 1;
+    availabilitySecond = 1;
+    fprintf("Flow %d:\n",i);
+    fprintf("\tBest Path: ");
     bestPath{i}{1}
-    fprintf("Flow %d Alternative: ",i);
+    fprintf("\tAlternative path: ");
     if ~isempty(secondPath{i})
         secondPath{i}{1}
     else
         secondPath{i}
     end
+
+    for j=2:length(bestPath{i}{1})
+        availabilityBest = availabilityBest * A(bestPath{i}{1}(j-1),bestPath{i}{1}(j));
+    end
+    fprintf("\tAvailability for best path: %0.5f\n\n",availabilityBest);
+    for j=2:length(secondPath{i}{1})
+        availabilitySecond = availabilitySecond * A(secondPath{i}{1}(j-1),secondPath{i}{1}(j));
+    end
+    fprintf("\tAvailability for second path: %0.5f\n\n",availabilitySecond);
 end

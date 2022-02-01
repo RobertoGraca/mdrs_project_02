@@ -9,7 +9,9 @@ function [bestPath, secondPath]= disjoint_paths(Alog,T)
             row = shortestPath{1}(j-1);
             col = shortestPath{1}(j);
             AlogTemp(row,col) = inf;
+            AlogTemp(col,row) = inf;
         end
+
         [sP, tC] = kShortestPath(AlogTemp,T(i,1),T(i,2),1);
         secondPath{i} = sP;
     end
