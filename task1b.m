@@ -59,17 +59,75 @@ for i=1:nLinks
 end
 L= round(L);  %Km
 
+
+
+% Alinea a
+fprintf('Alinea a\n');
+
 % Compute up to n paths for each flow:
 n= inf;
-[sP nSP]= calculatePaths(L,T,n);
+[sP, nSP]= calculatePaths(L,T,n);
+for i=1:nFlows
+    fprintf('Flow %d - %d paths\n',i,length(sP{i}));
+end
 
+% Alinea b
+
+fprintf('Alinea b1\n');
 tempo= 10;
 [bestLoad,numSolutions,meanSolutions,values] = link_load_random(tempo,nNodes,Links,T,sP,nSP);
 
 figure(1);
+hold on;
 plot(sort(values));
 fprintf('RANDOM:\n');
 fprintf('   Best load = %.2f Gbps\n',bestLoad);
 fprintf('   No. of solutions = %d\n',numSolutions);
 fprintf('   Av. quality of solutions = %.2f Gbps\n',meanSolutions);
 
+fprintf('Alinea b2\n');
+
+tmp = {};
+for i=1:nFlows
+    for k=1:10
+        tmp{i}{k} = sP{i}{k};
+    end
+end
+sP = tmp;
+nSP = zeros(1,nFlows) + 10;
+
+tempo= 10;
+[bestLoad,numSolutions,meanSolutions,values] = link_load_random(tempo,nNodes,Links,T,sP,nSP);
+
+hold on;
+plot(sort(values));
+fprintf('RANDOM for 10 best paths:\n');
+fprintf('   Best load = %.2f Gbps\n',bestLoad);
+fprintf('   No. of solutions = %d\n',numSolutions);
+fprintf('   Av. quality of solutions = %.2f Gbps\n',meanSolutions);
+
+
+
+fprintf('Alinea b3\n');
+
+tmp = {};
+for i=1:nFlows
+    for k=1:5
+        tmp{i}{k} = sP{i}{k};
+    end
+end
+sP = tmp;
+nSP = zeros(1,nFlows) + 5;
+
+tempo= 10;
+[bestLoad,numSolutions,meanSolutions,values] = link_load_random(tempo,nNodes,Links,T,sP,nSP);
+
+hold on;
+plot(sort(values));
+fprintf('RANDOM for 5 best paths:\n');
+fprintf('   Best load = %.2f Gbps\n',bestLoad);
+fprintf('   No. of solutions = %d\n',numSolutions);
+fprintf('   Av. quality of solutions = %.2f Gbps\n',meanSolutions);
+title('Link Load Random');
+legend({'All','Top 10','Top 5'},'Location','northwest');
+hold off;

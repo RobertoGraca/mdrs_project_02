@@ -65,23 +65,57 @@ n= inf;
 
 tempo= 10;
 
-[bestEnergy,numSolutions,meanSolutions,values] = energy_random(tempo,nNodes,Links,T,L,sP,nSP);
+% Alinea c
+
+fprintf('Alinea c1\n');
+
+[bestEnergy,numSolutions,meanSolutions,values] = energy_hill_climbing(tempo,nNodes,Links,T,L,sP,nSP);
+
+figure(1);
+hold on;
+plot(sort(values));
+fprintf('ENERGY MULTI START HILL CLIMBING:\n');
+fprintf('   Best energy = %.2f \n',bestEnergy);
+fprintf('   No. of solutions = %d\n',numSolutions);
+fprintf('   Av. quality of solutions = %.2f \n',meanSolutions);
+
+fprintf('Alinea c2\n');
+tmp = {};
+for i=1:nFlows
+    for k=1:10
+        tmp{i}{k} = sP{i}{k};
+    end
+end
+sP = tmp;
+nSP = zeros(1,nFlows) + 10;
+
+[bestEnergy,numSolutions,meanSolutions,values] = energy_hill_climbing(tempo,nNodes,Links,T,L,sP,nSP);
 
 hold on;
-figure(1);
 plot(sort(values));
-fprintf('RANDOM:\n');
+fprintf('ENERGY MULTI START HILL CLIMBING:\n');
 fprintf('   Best energy = %.2f \n',bestEnergy);
 fprintf('   No. of solutions = %d\n',numSolutions);
-fprintf('   Av. quality of solutions = %.2f Gbps\n',meanSolutions);
+fprintf('   Av. quality of solutions = %.2f \n',meanSolutions);
 
+fprintf('Alinea c3\n');
+tmp = {};
+for i=1:nFlows
+    for k=1:10
+        tmp{i}{k} = sP{i}{k};
+    end
+end
+sP = tmp;
+nSP = zeros(1,nFlows) + 5;
 
-[bestEnergy,numSolutions,meanSolutions,values] = energy_greedy_randomized(tempo,nNodes,Links,T,L,sP,nSP);
+[bestEnergy,numSolutions,meanSolutions,values] = energy_hill_climbing(tempo,nNodes,Links,T,L,sP,nSP);
 
-figure(1);
+hold on;
 plot(sort(values));
-fprintf('GREEDY RANDOMIZED:\n');
+fprintf('ENERGY MULTI START HILL CLIMBING:\n');
 fprintf('   Best energy = %.2f \n',bestEnergy);
 fprintf('   No. of solutions = %d\n',numSolutions);
-fprintf('   Av. quality of solutions = %.2f Gbps\n',meanSolutions);
-
+fprintf('   Av. quality of solutions = %.2f \n',meanSolutions);
+title('Energy Multi Start Hill Climbing')
+legend({'All','Top 10','Top 5'},'Location','southeast');
+hold off;
