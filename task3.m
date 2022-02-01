@@ -85,5 +85,14 @@ end
 %% Alinea b)
 
 fprintf("Alínea b)\n");
-djPath = disjoint_paths(Alog,T);
-%celldisp(djPath);
+[bestPath, secondPath] = disjoint_paths(Alog,T);
+for i=1:nFlows
+    fprintf("Flow %d Best Path: ",i);
+    bestPath{i}{1}
+    fprintf("Flow %d Alternative: ",i);
+    if ~isempty(secondPath{i})
+        secondPath{i}{1}
+    else
+        secondPath{i}
+    end
+end
