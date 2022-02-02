@@ -67,7 +67,6 @@ A(isnan(A))= 0;
 
 Alog = -log(A);
 
-mAvPath = zeros(1,nFlows);
 mAvPath = mostAvailablePath(Alog,T,1);
 
 %% Alínea a)
@@ -81,9 +80,11 @@ for i=1:nFlows
         col = mAvPath{i}{1}(j);
         availability = availability * A(row,col);
     end
-    fprintf("Most Available Path in Flow %d: ",i);
-    mAvPath{i}{1}
-    fprintf("Availability in Flow %d: %0.4f \n\n",i,availability);
+    fprintf("Most Available Path in Flow %d: %d",i,mAvPath{i}{1}(1));
+    for j= 2:length(mAvPath{i}{1})
+        fprintf("-%d",mAvPath{i}{1}(j));
+    end
+    fprintf("\nAvailability: %0.5f \n\n",availability);
 end
 %% Alinea b)
 
@@ -124,16 +125,31 @@ fprintf("Service Availability: %0.5f%%\n\n",(serviceAvailability/nFlows)*100);
 
 %% Alínea c)
 
-fprintf("Alínea c)\n");
+fprintf("\nAlínea c)\n");
 Loads= calculateLinkLoads1plus1(nNodes,Links,T,bestPath,secondPath)
 totalLoad= sum(sum(Loads(:,3:4)));
-fprintf("Protection 1+1 Total Load: %0.3f\n\n",totalLoad);
+fprintf("Protection 1+1 Total Bandwidth: %0.3f Gbps\n",totalLoad);
+maxLoad= max(max(Loads(:,3:4)));
+fprintf("Protection 1+1 Highest Bandwidth: %0.3f Gbps\n\n",maxLoad);
+
+for l=1:nLinks
+    if Loads(l,3) > 10 || Loads(l,4) > 10
+        fprintf("Link between %d and %d do not have enough capacity\n",Loads(l,1),Loads(l,2));
+    end
+end
 
 %% Alínea d)
 
-fprintf("Alínea d)\n");
+fprintf("\nAlínea d)\n");
 Loads= calculateLinkLoads1to1(nNodes,Links,T,bestPath,secondPath)
 totalLoad= sum(sum(Loads(:,3:4)));
-fprintf("Protection 1:1 Total Load: %0.3f\n",totalLoad);
+fprintf("Protection 1:1 Total Load: %0.3f Gbps\n",totalLoad);
+maxLoad= max(max(Loads(:,3:4)));
+fprintf("Protection 1:1 Highest Bandwidth: %0.3f Gbps\n\n",maxLoad);
 
+for l=1:nLinks
+    if Loads(l,3) > 10 || Loads(l,4) > 10
+        fprintf("Link between %d and %d do not have enough capacity\n",Loads(l,1),Loads(l,2));
+    end
+end
 

@@ -66,28 +66,64 @@ A= MTBF./(MTBF + 24);
 A(isnan(A))= 0;
 
 Alog = -log(A);
-
+fprintf("\nAlínea a)\n");
 for i=1:nFlows  
     [bestPath, secondPath] = kpath_with_disjoint(Alog,T,10);
 
     fprintf("Flow %d:\n",i);
     for k=1:10
+        availabilityBest = 1;
+        availabilitySecond = 1;
         fprintf("\tPath %d: %d",k,bestPath{i}{k}(1));
         for j= 2:length(bestPath{i}{k})
             fprintf("-%d",bestPath{i}{k}(j));
+            availabilityBest = availabilityBest * A(bestPath{i}{k}(j-1),bestPath{i}{k}(j));
         end
-
         fprintf("\t\tAlternative: ");
         if ~isempty(secondPath{i}{k})
             fprintf("%d",secondPath{i}{k}{1}(1));
-            for h=2:length(secondPath{i}{k}{1})
-                fprintf("-%d",secondPath{i}{k}{1}(h));
+            for j=2:length(secondPath{i}{k}{1})
+                fprintf("-%d",secondPath{i}{k}{1}(j));
+                availabilitySecond = availabilitySecond * A(secondPath{i}{k}{1}(j-1),secondPath{i}{k}{1}(j));
             end
         else
             fprintf("No alternative Found!!!");
+            availabilitySecond = 0;
         end
-        fprintf("\n\n");
+        pairAvailability = 1-((1-availabilityBest) * (1-availabilitySecond));
+        fprintf("\t\tPair Availability: %0.5f%%",pairAvailability*100);
+        fprintf("\n");
     end
 end
 
 %% Alínea b)
+time = 30;
+nSP = ones(1,10) .* 10;
+serviceAvailability = 0;
+fprintf("\nAlínea b)\n");
+[best_load, best_sol] = disjoint_hill_climbing(time,nNodes,Links,T,bestPath,secondPath,nSP);
+
+for i=1:nFlows
+    availabilityBest = 1;
+    availabilitySecond = 1;
+    fprintf("Flow %d:\n",i);
+    fprintf("\tBest Pair: %d",bestPath{i}{best_sol(i)}(1));
+    for j= 2:length(bestPath{i}{best_sol(i)})
+        fprintf("-%d",bestPath{i}{best_sol(i)}(j));
+        availabilityBest = availabilityBest * A(bestPath{i}{best_sol(i)}(j-1),bestPath{i}{best_sol(i)}(j));
+    end
+    fprintf("\t\tAlternative: %d",secondPath{i}{best_sol(i)}{1}(1));
+    for j= 2:length(secondPath{i}{best_sol(i)}{1})
+        fprintf("-%d",secondPath{i}{best_sol(i)}{1}(j));
+        availabilitySecond = availabilitySecond * A(secondPath{i}{best_sol(i)}{1}(j-1),secondPath{i}{best_sol(i)}{1}(j));
+    end
+
+    pairAvailability = 1-((1-availabilityBest) * (1-availabilitySecond));
+    serviceAvailability = serviceAvailability + pairAvailability;
+    fprintf("\t\tPair Availability: %0.5f%%",pairAvailability*100);
+    fprintf("\n");
+end
+fprintf("\nAverage Service Availability: %0.5f Gbps\n",(serviceAvailability/nFlows)*100);
+fprintf("Highest Required Bandwidth: %0.3f Gbps\n",best_load);
+
+
