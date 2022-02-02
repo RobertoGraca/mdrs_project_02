@@ -7,20 +7,25 @@ function [best_energy,num_solutions,mean_solutions,allValues] = energy_random(te
     sol= zeros(1,nFlows);
     allValues= [];
     while toc(t)<tempo
-        for i=1:nFlows
-            sol(i) = randi(nSP(i));
-        end
-        Loads= calculateLinkLoads(nNodes,Links,T,sP,sol);
-        load= max(max(Loads(:,3:4)));
-        energy = 0;
-        if load <= 10
-            for i=1:nLinks
-                if(Loads(i,3)+Loads(i,4) > 0)
-                    energy = energy + L(Loads(i,1),Loads(i,2));
-                end
+        continuar = true;
+        while continuar
+            continuar = false;
+            for i=1:nFlows
+                sol(i) = randi(nSP(i));
             end
-        else
-            energy = inf;
+            Loads= calculateLinkLoads(nNodes,Links,T,sP,sol);
+            load= max(max(Loads(:,3:4)));
+            energy = 0;
+            if load <= 10
+                for i=1:nLinks
+                    if(Loads(i,3)+Loads(i,4) > 0)
+                        energy = energy + L(Loads(i,1),Loads(i,2));
+                    end
+                end
+            else
+                energy = inf;
+                continuar = true;
+            end
         end
         allValues= [allValues energy];
         if energy<bestEnergy

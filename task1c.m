@@ -68,7 +68,7 @@ fprintf('Alinea a\n');
 n= inf;
 [sP, nSP]= calculatePaths(L,T,n);
 for i=1:nFlows
-    fprintf('Flow %d - %d paths\n',i,length(sP{i}));
+    fprintf('Flow from %d to %d - %d paths\n',T(i,1),T(i,2),length(sP{i}));
 end
 
 % Alinea c

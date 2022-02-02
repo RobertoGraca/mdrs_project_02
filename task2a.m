@@ -117,4 +117,5 @@ fprintf('   Best energy = %.2f \n',bestEnergy);
 fprintf('   No. of solutions = %d\n',numSolutions);
 fprintf('   Av. quality of solutions = %.2f \n',meanSolutions);
 legend({'All','Top 10','Top 5'},'Location','southeast');
+title('Energy Random');
 hold off;
