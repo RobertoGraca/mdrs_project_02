@@ -4,7 +4,7 @@ function Loads= calculateLinkLoads1to1Adapted(nNodes,Links,T,sP1,sP2,sol)
     aux= zeros(nNodes);
     for i= 1:nFlows
         if sol(i) > 0
-            path= sP1{sol(i)};
+            path= sP1{i}{sol(i)};
             for j=2:length(path)
                 aux(path(j-1),path(j))= aux(path(j-1),path(j)) + T(i,3); 
                 aux(path(j),path(j-1))= aux(path(j),path(j-1)) + T(i,4);
@@ -17,15 +17,15 @@ function Loads= calculateLinkLoads1to1Adapted(nNodes,Links,T,sP1,sP2,sol)
         t2= Links(link,2);
         for i= 1:nFlows
             if sol(i) > 0
-                path= sP1{sol(i)};
+                path= sP1{i}{sol(i)};
                 pathdif= find(path==t1 | path==t2);
                 if length(pathdif)<2 || pathdif(2)-pathdif(1)>1
                     for j=2:length(path)
                         aux2(path(j-1),path(j))= aux2(path(j-1),path(j)) + T(i,3); 
                         aux2(path(j),path(j-1))= aux2(path(j),path(j-1)) + T(i,4);
                     end
-                elseif ~isempty(sP2{i})
-                    path= sP2{sol(i)};
+                elseif ~isempty(sP2{i}{sol(i)})
+                    path= sP2{i}{sol(i)};
                     for j=2:length(path)
                         aux2(path(j-1),path(j))= aux2(path(j-1),path(j)) + T(i,3); 
                         aux2(path(j),path(j-1))= aux2(path(j),path(j-1)) + T(i,4);

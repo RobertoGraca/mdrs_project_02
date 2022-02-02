@@ -1,4 +1,4 @@
-function [best_load, best_sol] = disjoint_hill_climbing(time,nNodes,Links,T,sP1,sP2,nSP)
+function [best_load, best_sol, allValues] = disjoint_hill_climbing(time,nNodes,Links,T,sP1,sP2,nSP)
     nFlows= size(T,1);
     %Optimization algorithm with multi start hill climbing:
     t= tic;
@@ -12,9 +12,9 @@ function [best_load, best_sol] = disjoint_hill_climbing(time,nNodes,Links,T,sP1,
         for i= ax2
             k_best= 0;
             best= inf;
-            for k= 1:nSP(i)
+            for k= 1:nSP
                 sol(i)= k;
-                Loads= calculateLinkLoads1to1Adapted(nNodes,Links,T,sP1{i},sP2{i},sol);
+                Loads= calculateLinkLoads1to1Adapted(nNodes,Links,T,sP1,sP2,sol);
                 load= max(max(Loads(:,3:4)));
                 if load<best
                     k_best= k;
@@ -24,7 +24,6 @@ function [best_load, best_sol] = disjoint_hill_climbing(time,nNodes,Links,T,sP1,
             sol(i)= k_best;
         end
 
-        Loads= calculateLinkLoads1to1Adapted(nNodes,Links,T,sP1{i},sP2{i},sol);
         load= best;
         
         %HILL CLIMBING:
@@ -34,11 +33,11 @@ function [best_load, best_sol] = disjoint_hill_climbing(time,nNodes,Links,T,sP1,
             k_best= 0;
             best= load;
             for i= 1:nFlows
-                for k= 1:nSP(i)
+                for k= 1:nSP
                     if k~=sol(i)
                         aux= sol(i);
                         sol(i)= k;
-                        Loads= calculateLinkLoads1to1Adapted(nNodes,Links,T,sP1{i},sP2{i},sol);
+                        Loads= calculateLinkLoads1to1Adapted(nNodes,Links,T,sP1,sP2,sol);
                         load1= max(max(Loads(:,3:4)));
                         if load1<best
                             i_best= i;

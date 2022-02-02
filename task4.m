@@ -67,8 +67,9 @@ A(isnan(A))= 0;
 
 Alog = -log(A);
 fprintf("\nAlínea a)\n");
+[bestPath, secondPath] = kpath_with_disjoint(Alog,T,10);
 for i=1:nFlows  
-    [bestPath, secondPath] = kpath_with_disjoint(Alog,T,10);
+    
 
     fprintf("Flow %d:\n",i);
     for k=1:10
@@ -101,7 +102,7 @@ time = 30;
 nSP = ones(1,10) .* 10;
 serviceAvailability = 0;
 fprintf("\nAlínea b)\n");
-[best_load, best_sol] = disjoint_hill_climbing(time,nNodes,Links,T,bestPath,secondPath,nSP);
+[best_load, best_sol, values] = disjoint_hill_climbing(time,nNodes,Links,T,bestPath,secondPath,nSP);
 
 for i=1:nFlows
     availabilityBest = 1;
@@ -120,10 +121,9 @@ for i=1:nFlows
 
     pairAvailability = 1-((1-availabilityBest) * (1-availabilitySecond));
     serviceAvailability = serviceAvailability + pairAvailability;
-    fprintf("\t\tPair Availability: %0.5f%%",pairAvailability*100);
+    fprintf("\n\tPair Availability: %0.5f%%",pairAvailability*100);
     fprintf("\n");
 end
-fprintf("\nAverage Service Availability: %0.5f Gbps\n",(serviceAvailability/nFlows)*100);
+fprintf("\nAverage Service Availability: %0.5f%%\n",(serviceAvailability/nFlows)*100);
 fprintf("Highest Required Bandwidth: %0.3f Gbps\n",best_load);
-
-
+plot(sort(values));
